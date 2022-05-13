@@ -24,27 +24,23 @@ jobs:
 
       - name: Apply Policy
         run: |
-          kubectl apply -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=1.0.0"
           kubectl apply -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.0.0"
           kubectl apply -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.1.0"
           kubectl apply -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.1.1"
 
       - name: Wait for policy to be available
         run: |
-          while [[ $(kubectl get -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=1.0.0" -o 'jsonpath={..status.ready}') != "true" ]]; do sleep 1; done
           while [[ $(kubectl get -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.0.0" -o 'jsonpath={..status.ready}') != "true true" ]]; do sleep 1; done
           while [[ $(kubectl get -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.1.0" -o 'jsonpath={..status.ready}') != "true true" ]]; do sleep 1; done
           while [[ $(kubectl get -k "github.com/policy-as-versioned-code/policy/kubernetes/kyverno?ref=2.1.1" -o 'jsonpath={..status.ready}') != "true true" ]]; do sleep 1; done
 
       - name: Deploy apps
         run: |
-          kubectl apply -k github.com/policy-as-versioned-code/app1
           kubectl apply -k github.com/policy-as-versioned-code/app2
           kubectl apply -k github.com/policy-as-versioned-code/app3
 
       - name: Check all apps are deployed
         run: |
           kubectl wait --for=condition=available --timeout=600s \
-            deployment/app1 \
             deployment/app2 \
             deployment/app3
